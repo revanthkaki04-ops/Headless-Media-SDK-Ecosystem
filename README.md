@@ -53,11 +53,11 @@ To guarantee zero architectural degradation over time, the system strictly enfor
 
 ```mermaid
 graph TD
-    Web[apps/web] -->|Imports| MediaReact[@media-sdk/react]
-    Web -->|Imports| MediaUIReact[@media-sdk/ui-react]
-    MediaReact -->|Imports| MediaCore[@media-sdk/core]
-    MediaUIReact -.->|Zero Core Dependency| PureState[Pure Headless Prop-Getters]
-    MediaCore -.->|Zero DOM/React| PureTS[Pure TypeScript]
+    Web["apps/web"] -->|Imports| MediaReact["@media-sdk/react"]
+    Web -->|Imports| MediaUIReact["@media-sdk/ui-react"]
+    MediaReact -->|Imports| MediaCore["@media-sdk/core"]
+    MediaUIReact -.->|Zero Core Dependency| PureState["Pure Headless Prop-Getters"]
+    MediaCore -.->|Zero DOM/React| PureTS["Pure TypeScript"]
 ```
 
 ### Boundary Isolation Matrix
