@@ -1,0 +1,95 @@
+# CURSOR RULE: Media SDK Headless UI Layer (@media-sdk/ui-react)
+
+## ARCHITECTURAL PURPOSE
+`@media-sdk/ui-react` is a **STRICTLY HEADLESS** UI library using the **Prop-Getters Pattern** (similar to Downshift or React Table). It contains ZERO CSS, ZERO Tailwind classes, and ZERO HTML assumptions. It manages accessibility (ARIA attributes), focus traps, and keyboard navigation.
+
+---
+
+## 🚫 MANDATORY RULES & FATAL VIOLATIONS
+
+### 1. NEVER IMPORT `@media-sdk/core` OR PEXELS TYPES INSIDE `@media-sdk/ui-react`
+- ❌ **WRONG**:
+  ```tsx
+  // Inside @media-sdk/ui-react hook:
+  import { PexelsPhoto } from '@media-sdk/core'; // FATAL: Breaks headless UI decoupling
+  ```
+- ✅ **RIGHT**: Headless hooks MUST accept generic numbers/counts and un-opinionated callback handlers:
+  ```tsx
+  export function useGrid(options: { fetchNextPage?: () => void }) { ... }
+  ```
+
+### 2. NEVER ADD INLINE STYLES OR CLASSNAMES INSIDE HEADLESS HOOKS
+- ❌ **WRONG**:
+  ```tsx
+  const getContainerProps = () => ({
+    style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)' }, // FATAL: Opinionated CSS styling in headless package
+    className: 'grid-container'
+  });
+  ```
+- ✅ **RIGHT**: Return pure ARIA and event handler prop-getters:
+  ```tsx
+  const getContainerProps = (userProps) => mergeProps({
+    role: 'grid',
+    'aria-busy': isLoading
+  }, userProps);
+  ```
+
+---
+
+## 💡 USAGE PATTERNS & CODE EXAMPLES
+
+### 1. Infinite Grid Hook: `useGrid`
+```tsx
+import { useGrid } from '@media-sdk/ui-react';
+
+function CustomGrid({ items, onLoadMore, hasMore, loading }) {
+  const { getContainerProps, getItemProps, getSentinelProps } = useGrid({
+    fetchNextPage: onLoadMore,
+    hasNextPage: hasMore,
+    isLoading: loading,
+  });
+
+  return (
+    <div {...getContainerProps({ className: 'my-custom-css-grid' })}>
+      {items.map((item, index) => (
+        <div key={item.id} {...getItemProps(index, { className: 'my-grid-card' })}>
+          <img src={item.imageUrl} alt={item.title} />
+        </div>
+      ))}
+      <div {...getSentinelProps()} />
+    </div>
+  );
+}
+```
+
+### 2. Focus-Trapped Lightbox Hook: `useLightbox`
+```tsx
+import { useLightbox } from '@media-sdk/ui-react';
+
+function CustomLightbox({ items }) {
+  const {
+    isOpen,
+    activeIndex,
+    open,
+    close,
+    getOverlayProps,
+    getContentProps,
+    getCloseButtonProps,
+    getNextButtonProps,
+    getPrevButtonProps
+  } = useLightbox({ totalItems: items.length });
+
+  if (!isOpen) return null;
+
+  return (
+    <div {...getOverlayProps({ className: 'modal-backdrop' })}>
+      <div {...getContentProps({ className: 'modal-body' })}>
+        <img src={items[activeIndex].url} alt="" />
+        <button {...getPrevButtonProps()}>Prev</button>
+        <button {...getNextButtonProps()}>Next</button>
+        <button {...getCloseButtonProps()}>Close</button>
+      </div>
+    </div>
+  );
+}
+```

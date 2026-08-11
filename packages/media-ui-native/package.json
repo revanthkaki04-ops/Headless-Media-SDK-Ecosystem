@@ -1,0 +1,6 @@
+{
+  "name": "media-ui-native",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Scaffolded React Native Headless UI prop-getters package - Scoped for future sprint."
+}

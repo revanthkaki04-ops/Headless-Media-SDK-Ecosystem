@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SDK Data Documentation | @media-sdk/react</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --surface: #111827;
+      --border: rgba(255, 255, 255, 0.1);
+      --accent: #3b82f6;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      padding: 40px 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1, h2, h3 { font-family: 'Outfit', sans-serif; color: #fff; }
+    h1 { border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 24px; color: var(--accent); }
+    h2 { margin-top: 32px; margin-bottom: 12px; }
+    pre {
+      background: #04060a;
+      border: 1px solid var(--border);
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: monospace;
+      color: #38bdf8;
+    }
+    code { font-family: monospace; color: #60a5fa; }
+    .badge { background: rgba(59, 130, 246, 0.15); color: #60a5fa; padding: 4px 10px; border-radius: 4px; font-weight: 600; font-size: 12px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .nav-back { display: inline-block; margin-bottom: 20px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <a href="/" class="nav-back">← Back to Showcase App</a>
+  <span class="badge">SDK DOCUMENTATION</span>
+  <h1>@media-sdk/react & @media-sdk/core</h1>
+  
+  <p>The <code>media-core</code> package is a pure TypeScript SDK for fetching media from the Pexels API, providing event tracking (<code>view</code>, <code>download</code>), request deduplication, and in-memory caching.</p>
+
+  <h2>1. Provider Setup & Authentication</h2>
+  <pre><code>import { MediaProvider } from '@media-sdk/react';
+
+function App() {
+  return (
+    &lt;MediaProvider apiKey="YOUR_PEXELS_API_KEY"&gt;
+      &lt;YourApp /&gt;
+    &lt;/MediaProvider&gt;
+  );
+}</code></pre>
+
+  <h2>2. Fetching Media via React Hooks</h2>
+  <pre><code>import { useMediaSearch, useMediaVideoSearch } from '@media-sdk/react';
+
+function PhotoFeed() {
+  const { data, loading, error, hasMore, loadMore } = useMediaSearch('ocean', { perPage: 16 });
+
+  if (loading &amp;&amp; data.length === 0) return &lt;p&gt;Loading...&lt;/p&gt;;
+
+  return (
+    &lt;div&gt;
+      {data.map(item =&gt; (
+        &lt;img key={item.id} src={item.src.medium} alt={item.alt} /&gt;
+      ))}
+      {hasMore &amp;&amp; &lt;button onClick={loadMore}&gt;Load More&lt;/button&gt;}
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+  <h2>3. Telemetry Event Emitter (`view`, `download`)</h2>
+  <pre><code>import { useMediaEvent, usePexelsClient } from '@media-sdk/react';
+
+function EventLogger() {
+  const client = usePexelsClient();
+
+  useMediaEvent('view', (event) =&gt; {
+    console.log('User viewed photo:', event.media.id);
+  });
+
+  useMediaEvent('download', (event) =&gt; {
+    console.log('User downloaded photo:', event.media.id);
+  });
+
+  const handleDownload = (photo) =&gt; {
+    client.emit('download', { media: photo, timestamp: Date.now() });
+  };
+}</code></pre>
+
+  <h2>4. Core Architectural Principles</h2>
+  <ul>
+    <li><strong>Zero UI/DOM Leaks</strong>: <code>media-core</code> contains no React or DOM imports.</li>
+    <li><strong>Request Deduplication</strong>: 5-minute in-memory cache layer to prevent redundant Pexels API network calls.</li>
+  </ul>
+</body>
+</html>

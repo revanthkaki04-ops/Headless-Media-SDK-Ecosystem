@@ -1,0 +1,81 @@
+# CURSOR RULE: Media SDK Data Layer (@media-sdk/react)
+
+## ARCHITECTURAL PURPOSE
+`@media-sdk/react` provides React state management wrappers (Context & Hooks) around `@media-sdk/core`. It handles loading states, pagination cursors, caching, and event emitter subscriptions.
+
+---
+
+## 🚫 MANDATORY RULES & FATAL VIOLATIONS
+
+### 1. NEVER IMPORT `@media-sdk/core` DIRECTLY IN COMPONENTS
+- ❌ **WRONG**:
+  ```tsx
+  import { PexelsClient } from '@media-sdk/core';
+  const client = new PexelsClient({ apiKey: 'xxx' }); // FATAL: Breaks Dependency Injection & Context Singleton
+  ```
+- ✅ **RIGHT**:
+  ```tsx
+  import { usePexelsClient, MediaProvider } from '@media-sdk/react';
+  const client = usePexelsClient(); // Context singleton access
+  ```
+
+### 2. NEVER IMPORT `@media-sdk/ui-react` INSIDE DATA HOOKS OR PROVIDERS
+- ❌ **WRONG**: `@media-sdk/react` importing `@media-sdk/ui-react`.
+- ✅ **RIGHT**: Keep `@media-sdk/react` strictly focused on data fetching, caching, and event dispatch.
+
+---
+
+## 💡 USAGE PATTERNS & CODE EXAMPLES
+
+### Provider Initialization
+Always wrap the application root in `<MediaProvider>`:
+```tsx
+import { MediaProvider } from '@media-sdk/react';
+
+export function Root() {
+  return (
+    <MediaProvider apiKey={process.env.VITE_PEXELS_KEY}>
+      <App />
+    </MediaProvider>
+  );
+}
+```
+
+### Data Fetching Hook: `useMediaSearch`
+```tsx
+import { useMediaSearch } from '@media-sdk/react';
+
+function SearchResults({ query }: { query: string }) {
+  const { data, loading, error, hasMore, loadMore } = useMediaSearch(query, { perPage: 20 });
+
+  if (loading && data.length === 0) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  return (
+    <div>
+      {data.map(photo => (
+        <img key={photo.id} src={photo.src.medium} alt={photo.alt} />
+      ))}
+      {hasMore && <button onClick={loadMore}>Load More</button>}
+    </div>
+  );
+}
+```
+
+### Analytics & Event Tracking: `useMediaEvent`
+Subscribe to SDK events such as 'view' or 'download':
+```tsx
+import { useMediaEvent } from '@media-sdk/react';
+
+function AnalyticsTracker() {
+  useMediaEvent('view', (payload) => {
+    console.log('Tracked view event:', payload.media.id);
+  });
+
+  useMediaEvent('download', (payload) => {
+    console.log('Tracked download event:', payload.media.id, payload.quality);
+  });
+
+  return null;
+}
+```

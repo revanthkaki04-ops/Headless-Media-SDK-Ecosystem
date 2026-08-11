@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Headless UI Component Docs | @media-sdk/ui-react</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --surface: #111827;
+      --border: rgba(255, 255, 255, 0.1);
+      --accent: #22c55e;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      padding: 40px 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1, h2, h3 { font-family: 'Outfit', sans-serif; color: #fff; }
+    h1 { border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 24px; color: var(--accent); }
+    h2 { margin-top: 32px; margin-bottom: 12px; }
+    pre {
+      background: #04060a;
+      border: 1px solid var(--border);
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: monospace;
+      color: #4ade80;
+    }
+    code { font-family: monospace; color: #86efac; }
+    .badge { background: rgba(34, 197, 94, 0.15); color: #4ade80; padding: 4px 10px; border-radius: 4px; font-weight: 600; font-size: 12px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .nav-back { display: inline-block; margin-bottom: 20px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <a href="/" class="nav-back">← Back to Showcase App</a>
+  <span class="badge">HEADLESS UI COMPONENT DOCS</span>
+  <h1>@media-sdk/ui-react</h1>
+  
+  <p>The <code>media-ui-react</code> package delivers pure headless UI prop-getter hooks with zero shipped styles. Consumers supply custom markup and CSS while the package manages infinite scrolling, focus trapping, vertical video snap paging, and keyboard shortcuts.</p>
+
+  <h2>1. Headless Infinite Grid Hook (`useGrid`)</h2>
+  <pre><code>import { useGrid } from '@media-sdk/ui-react';
+
+function GridExample({ data, fetchNextPage, hasNextPage, isLoading }) {
+  const { getContainerProps, getItemProps, getSentinelProps } = useGrid({
+    fetchNextPage,
+    hasNextPage,
+    isLoading
+  });
+
+  return (
+    &lt;div {...getContainerProps({ className: 'my-custom-grid' })}&gt;
+      {data.map((item, index) =&gt; (
+        &lt;div key={item.id} {...getItemProps(index, { className: 'grid-item' })}&gt;
+          &lt;img src={item.src} alt={item.alt} /&gt;
+        &lt;/div&gt;
+      ))}
+      &lt;div {...getSentinelProps()}&gt;{isLoading &amp;&amp; 'Loading...'}&lt;/div&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+  <h2>2. Focus-Trapped Accessible Lightbox (`useLightbox`)</h2>
+  <pre><code>import { useLightbox } from '@media-sdk/ui-react';
+
+function LightboxExample({ totalItems, activeIndex }) {
+  const { isOpen, open, close, next, prev, getOverlayProps, getContentProps, getCloseButtonProps } = useLightbox({
+    totalItems
+  });
+
+  if (!isOpen) return null;
+
+  return (
+    &lt;div {...getOverlayProps({ className: 'lightbox-modal' })}&gt;
+      &lt;div {...getContentProps({ className: 'modal-body' })}&gt;
+        &lt;button {...getCloseButtonProps()}&gt;✕&lt;/button&gt;
+        &lt;button onClick={prev}&gt;←&lt;/button&gt;
+        &lt;button onClick={next}&gt;→&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+  <h2>3. Throttled Vertical Reel Swiper (`useReelSwiper`)</h2>
+  <pre><code>import { useReelSwiper } from '@media-sdk/ui-react';
+
+function VideoReelView({ videos }) {
+  const { activeIndex, getContainerProps, getSlideProps } = useReelSwiper({
+    totalItems: videos.length
+  });
+
+  return (
+    &lt;div {...getContainerProps({ className: 'reel-swiper' })}&gt;
+      &lt;div className="reel-track" style={{ transform: `translateY(-${activeIndex * 100}%)` }}&gt;
+        {videos.map((video, index) =&gt; (
+          &lt;div key={video.id} {...getSlideProps(index, { className: 'reel-slide' })}&gt;
+            &lt;video src={video.link} autoPlay={index === activeIndex} loop muted /&gt;
+          &lt;/div&gt;
+        ))}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+  <h2>4. Zero-Dependency Contract</h2>
+  <ul>
+    <li><strong>Zero SDK Imports</strong>: <code>media-ui-react</code> has 0 imports from <code>media-core</code> or <code>media-react</code>.</li>
+    <li><strong>Zero CSS Dependencies</strong>: Completely unstyled prop-getter architecture.</li>
+  </ul>
+</body>
+</html>

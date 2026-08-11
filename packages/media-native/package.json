@@ -1,0 +1,6 @@
+{
+  "name": "media-native",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Scaffolded React Native SDK core wrapper - Scoped for future sprint."
+}

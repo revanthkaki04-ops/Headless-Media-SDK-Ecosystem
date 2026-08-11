@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "media-core": ["packages/media-core/src/index.ts"],
+      "media-react": ["packages/media-react/src/index.tsx"],
+      "media-ui-react": ["packages/media-ui-react/src/index.tsx"],
+      "@media-sdk/core": ["packages/media-core/src/index.ts"],
+      "@media-sdk/react": ["packages/media-react/src/index.tsx"],
+      "@media-sdk/ui-react": ["packages/media-ui-react/src/index.tsx"]
+    }
+  }
+}
