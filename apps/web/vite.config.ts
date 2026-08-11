@@ -14,6 +14,10 @@ export default defineConfig({
       '@media-sdk/ui-react': path.resolve(__dirname, '../../packages/media-ui-react/src/index.tsx'),
     },
   },
+  build: {
+    outDir: path.resolve(__dirname, '../../dist'),
+    emptyOutDir: true,
+  },
   server: {
     port: 3000,
   },
